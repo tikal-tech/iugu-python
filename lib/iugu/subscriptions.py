@@ -1,7 +1,8 @@
-__author__ = 'horacioibrahim'
+__author__ = "horacioibrahim"
 
 # python-iugu package modules
 from . import base, config, errors, merchant
+
 
 class IuguSubscription(base.IuguApi):
 
@@ -22,11 +23,13 @@ class IuguSubscription(base.IuguApi):
         # required
         self.customer_id = kwargs.get("customer_id")
         # optionals
-        self.plan_identifier = kwargs.get("plan_identifier") # only credits_based subscriptions
+        self.plan_identifier = kwargs.get(
+            "plan_identifier"
+        )  # only credits_based subscriptions
         self.expires_at = kwargs.get("expires_at")
         # self.only_on_charge_success = kwargs.get("only_on_charge_success") # if exist payment method for client
         self._subitems = kwargs.get("subitems")
-        self.subitems = [] # of items
+        self.subitems = []  # of items
         self.custom_variables = kwargs.get("custom_variables")
         self._data = None
         self.suspended = kwargs.get("suspended")
@@ -43,9 +46,11 @@ class IuguSubscription(base.IuguApi):
         self.plan_ref = kwargs.get("plan_ref")
         self.active = kwargs.get("active")
         self.in_trial = kwargs.get("in_trial")
-        self.recent_invoices = kwargs.get("recent_invoices") # only resume of invoice
+        self.recent_invoices = kwargs.get("recent_invoices")  # only resume of invoice
         self.logs = kwargs.get("logs")
-        self._type = kwargs.get("_type") # facilities to verify if credit_base or general
+        self._type = kwargs.get(
+            "_type"
+        )  # facilities to verify if credit_base or general
 
         if isinstance(self._subitems, list):
             for item in self._subitems:
@@ -105,10 +110,11 @@ class IuguSubscription(base.IuguApi):
                 for item in self.subitems:
                     data.extend((item.to_data(is_subscription=True)))
             else:
-                raise errors.IuguSubscriptionsException("The subitems must be " \
-                    "a list of obj Item")
+                raise errors.IuguSubscriptionsException(
+                    "The subitems must be " "a list of obj Item"
+                )
 
-        if self.custom_variables: # TODO: to create test
+        if self.custom_variables:  # TODO: to create test
             data.extend(self.custom_variables)
 
         # credit based subscriptions
@@ -142,9 +148,15 @@ class IuguSubscription(base.IuguApi):
     def data(self):
         del self._data
 
-    def create(self, customer_id, plan_identifier, expires_at=None,
-               only_on_charge_success=False, subitems=None,
-               custom_variables=None):
+    def create(
+        self,
+        customer_id,
+        plan_identifier,
+        expires_at=None,
+        only_on_charge_success=False,
+        subitems=None,
+        custom_variables=None,
+    ):
         """
         Creates new subscription
 
@@ -164,14 +176,22 @@ class IuguSubscription(base.IuguApi):
             assert isinstance(custom_variables, dict), "Required a dict"
             custom_data = self.custom_variables_list(custom_variables)
         kwargs_local = locals().copy()
-        kwargs_local.pop('self')
+        kwargs_local.pop("self")
         self.data = kwargs_local
         response = self._conn.post(urn, self.data)
         return IuguSubscription(**response)
 
-    def set(self, sid, plan_identifier=None, expires_at=None,
-            subitems=None, suspended=None, skip_charge=None,
-            custom_variables=None, customer_id=None):
+    def set(
+        self,
+        sid,
+        plan_identifier=None,
+        expires_at=None,
+        subitems=None,
+        suspended=None,
+        skip_charge=None,
+        custom_variables=None,
+        customer_id=None,
+    ):
         """
         Changes a subscriptions with based arguments and Returns modified
         subscription of type no credit_based.
@@ -192,7 +212,7 @@ class IuguSubscription(base.IuguApi):
             assert isinstance(custom_variables, dict), "Required a dict"
             custom_data = self.custom_variables_list(custom_variables)
         kwargs_local = locals().copy()
-        kwargs_local.pop('self')
+        kwargs_local.pop("self")
         self.data = kwargs_local
         response = self._conn.put(urn, self.data)
         response["_type"] = "general"
@@ -205,8 +225,9 @@ class IuguSubscription(base.IuguApi):
         if self.id:
             sid = self.id
         else:
-            raise errors.IuguSubscriptionsException(value="Save is support "\
-                        "only to returned API object.")
+            raise errors.IuguSubscriptionsException(
+                value="Save is support " "only to returned API object."
+            )
 
         kwargs = {}
         # TODO: to improve this ineffective approach
@@ -214,10 +235,14 @@ class IuguSubscription(base.IuguApi):
         # If changes occurs in set() to revise this k in if used to mount kwargs
         for k, v in list(self.__dict__.items()):
             if v is not None:
-                if  k == "plan_identifier" or \
-                    k == "expires_at" or k == "subitems" or \
-                    k == "suspended" or k == "skip_charge" or \
-                                k == "custom_variables":
+                if (
+                    k == "plan_identifier"
+                    or k == "expires_at"
+                    or k == "subitems"
+                    or k == "suspended"
+                    or k == "skip_charge"
+                    or k == "custom_variables"
+                ):
                     kwargs[k] = v
                     last_valid_k = k
 
@@ -246,9 +271,17 @@ class IuguSubscription(base.IuguApi):
         return IuguSubscription(**response)
 
     @classmethod
-    def getitems(self, limit=None, skip=None, created_at_from=None,
-                 created_at_to=None, query=None, updated_since=None, sort=None,
-                 customer_id=None):
+    def getitems(
+        self,
+        limit=None,
+        skip=None,
+        created_at_from=None,
+        created_at_to=None,
+        query=None,
+        updated_since=None,
+        sort=None,
+        customer_id=None,
+    ):
         """
         Gets subscriptions by API default limited 100.
         """
@@ -370,15 +403,16 @@ class IuguSubscription(base.IuguApi):
             if self.id:
                 # short-circuit
                 if "credits_based" in self.__dict__ and self.credits_based:
-                    raise errors.\
-                        IuguSubscriptionsException(value="Instance must be " \
-                                        "object of IuguSubscriptionsException")
+                    raise errors.IuguSubscriptionsException(
+                        value="Instance must be " "object of IuguSubscriptionsException"
+                    )
                 sid = self.id
             else:
                 raise errors.IuguSubscriptionsException(value="ID (sid) can't be empty")
 
-        urn = "/v1/subscriptions/{sid}/change_plan/{plan_identifier}"\
-                .format(sid=sid, plan_identifier=plan_identifier)
+        urn = "/v1/subscriptions/{sid}/change_plan/{plan_identifier}".format(
+            sid=sid, plan_identifier=plan_identifier
+        )
         response = self._conn.post(urn, [])
 
         if self.is_credit_based(response):
@@ -408,9 +442,17 @@ class SubscriptionCreditsBased(IuguSubscription):
         self.credits_min = kwargs.get("credits_min")
         self.credits = kwargs.get("credits")
 
-    def create(self, customer_id, credits_cycle, price_cents=None,
-               credits_min=None, expires_at=None, only_on_charge_success=None,
-               subitems=None, custom_variables=None):
+    def create(
+        self,
+        customer_id,
+        credits_cycle,
+        price_cents=None,
+        credits_min=None,
+        expires_at=None,
+        only_on_charge_success=None,
+        subitems=None,
+        custom_variables=None,
+    ):
         """
         Create a subscription based in credits and return the instance
         this class.
@@ -419,8 +461,9 @@ class SubscriptionCreditsBased(IuguSubscription):
         """
 
         if price_cents is None or price_cents <= 0:
-            raise errors.IuguSubscriptionsException(value="price_cents must be " \
-                                         "greater than 0")
+            raise errors.IuguSubscriptionsException(
+                value="price_cents must be " "greater than 0"
+            )
 
         credits_based = self.credits_based
 
@@ -429,16 +472,25 @@ class SubscriptionCreditsBased(IuguSubscription):
             custom_data = self.custom_variables_list(custom_variables)
 
         kwargs_local = locals().copy()
-        kwargs_local.pop('self')
+        kwargs_local.pop("self")
         urn = "/v1/subscriptions"
         self.data = kwargs_local
         response = self._conn.post(urn, self.data)
         response["_type"] = "credit_based"
         return SubscriptionCreditsBased(**response)
 
-    def set(self, sid, expires_at=None, subitems=None, suspended=None,
-            skip_charge=None, price_cents=None, credits_cycle=None,
-            credits_min=None, custom_variables=None):
+    def set(
+        self,
+        sid,
+        expires_at=None,
+        subitems=None,
+        suspended=None,
+        skip_charge=None,
+        price_cents=None,
+        credits_cycle=None,
+        credits_min=None,
+        custom_variables=None,
+    ):
         """
         Changes an existent subscription no credit_based
 
@@ -450,7 +502,7 @@ class SubscriptionCreditsBased(IuguSubscription):
             assert isinstance(custom_variables, dict), "Required a dict"
             custom_data = self.custom_variables_list(custom_variables)
         kwargs_local = locals().copy()
-        kwargs_local.pop('self')
+        kwargs_local.pop("self")
         self.data = kwargs_local
         response = self._conn.put(urn, self.data)
         response["_type"] = "credit_based"
@@ -465,8 +517,9 @@ class SubscriptionCreditsBased(IuguSubscription):
         if self.id:
             sid = self.id
         else:
-            raise errors.IuguSubscriptionsException(value="Save is support "\
-                        "only to returned API object.")
+            raise errors.IuguSubscriptionsException(
+                value="Save is support " "only to returned API object."
+            )
 
         kwargs = {}
         # TODO: to improve this ineffective approach.
@@ -474,11 +527,16 @@ class SubscriptionCreditsBased(IuguSubscription):
         # occurs in set() to revise this k in if used to mount kwargs
         for k, v in list(self.__dict__.items()):
             if v is not None:
-                if  k == "expires_at" or \
-                    k == "subitems" or k == "suspended" or \
-                    k == "skip_charge" or k == "price_cents" or \
-                    k == "credits_cycle" or k == "credits_min" or \
-                    k == "custom_variables" :
+                if (
+                    k == "expires_at"
+                    or k == "subitems"
+                    or k == "suspended"
+                    or k == "skip_charge"
+                    or k == "price_cents"
+                    or k == "credits_cycle"
+                    or k == "credits_min"
+                    or k == "custom_variables"
+                ):
                     kwargs[k] = v
                     last_valid_k = k
 
@@ -500,9 +558,9 @@ class SubscriptionCreditsBased(IuguSubscription):
         if not sid:
             if self.id:
                 if not self.credits_based:
-                    raise errors.\
-                        IuguSubscriptionsException(value="Instance must be " \
-                                        "object of SubscriptionCreditsBased")
+                    raise errors.IuguSubscriptionsException(
+                        value="Instance must be " "object of SubscriptionCreditsBased"
+                    )
                 sid = self.id
             else:
                 raise errors.IuguSubscriptionsException(value="ID (sid) can't be empty")
@@ -512,8 +570,9 @@ class SubscriptionCreditsBased(IuguSubscription):
         response = self._conn.put(urn, data)
 
         if not self.is_credit_based(response):
-            raise errors.IuguSubscriptionsException(value="Instance must be " \
-                                        "object of SubscriptionCreditsBased")
+            raise errors.IuguSubscriptionsException(
+                value="Instance must be " "object of SubscriptionCreditsBased"
+            )
 
         response["_type"] = "credit_based"
         return SubscriptionCreditsBased(**response)
@@ -529,9 +588,9 @@ class SubscriptionCreditsBased(IuguSubscription):
         if not sid:
             if self.id:
                 if not self.credits_based:
-                    raise errors.\
-                        IuguSubscriptionsException(value="Instance must be " \
-                                        "object of SubscriptionCreditsBased")
+                    raise errors.IuguSubscriptionsException(
+                        value="Instance must be " "object of SubscriptionCreditsBased"
+                    )
                 sid = self.id
             else:
                 raise errors.IuguSubscriptionsException(value="ID (sid) can't be empty")
@@ -541,8 +600,9 @@ class SubscriptionCreditsBased(IuguSubscription):
         response = self._conn.put(urn, data)
 
         if not self.is_credit_based(response):
-            raise errors.IuguSubscriptionsException(value="Instance must be " \
-                                        "object of SubscriptionCreditsBased")
+            raise errors.IuguSubscriptionsException(
+                value="Instance must be " "object of SubscriptionCreditsBased"
+            )
 
         response["_type"] = "credit_based"
         return SubscriptionCreditsBased(**response)

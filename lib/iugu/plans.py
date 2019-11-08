@@ -1,7 +1,8 @@
-__author__ = 'horacioibrahim'
+__author__ = "horacioibrahim"
 
 # python-iugu package modules
 from . import base, config, errors
+
 
 class IuguPlan(object):
 
@@ -19,14 +20,14 @@ class IuguPlan(object):
 
     def __init__(self, **kwargs):
         self.id = kwargs.get("id")
-        self.name  = kwargs.get("name")
+        self.name = kwargs.get("name")
         self.identifier = kwargs.get("identifier")
         self.interval = kwargs.get("interval")
         self.interval_type = kwargs.get("interval_type")
         self.created_at = kwargs.get("created_at")
         self.updated_at = kwargs.get("updated_at")
-        self.currency = kwargs.get("currency") # API move it to prices scope
-        self.value_cents = kwargs.get("value_cents") # API move it to prices scope
+        self.currency = kwargs.get("currency")  # API move it to prices scope
+        self.value_cents = kwargs.get("value_cents")  # API move it to prices scope
         self._data = None
         self._prices = kwargs.get("prices")
         self.prices = []
@@ -51,8 +52,14 @@ class IuguPlan(object):
         with returned data by API.
         """
 
-        if self.name and self.identifier and self.interval and \
-            self.interval_type and self.currency and self.value_cents:
+        if (
+            self.name
+            and self.identifier
+            and self.interval
+            and self.interval_type
+            and self.currency
+            and self.value_cents
+        ):
             return True
         else:
             return False
@@ -108,16 +115,18 @@ class IuguPlan(object):
                 for price in self.prices:
                     data.extend(price.to_data())
             else:
-                raise errors.IuguPlansException(value="The fields prices must "\
-                 "be a list of obj Price")
+                raise errors.IuguPlansException(
+                    value="The fields prices must " "be a list of obj Price"
+                )
 
         if self.features:
             if isinstance(self.features, list):
                 for feature in self.features:
                     data.extend(feature.to_data())
             else:
-                raise errors.IuguPlansException(value="The fields features " \
-                    "must be a list of obj Feature")
+                raise errors.IuguPlansException(
+                    value="The fields features " "must be a list of obj Feature"
+                )
 
         self._data = data
 
@@ -125,9 +134,17 @@ class IuguPlan(object):
     def data(self):
         del self._data
 
-    def create(self, name=None, identifier=None, interval=None,
-               interval_type=None, currency=None, value_cents=None,
-               features=None, prices=None):
+    def create(
+        self,
+        name=None,
+        identifier=None,
+        interval=None,
+        interval_type=None,
+        currency=None,
+        value_cents=None,
+        features=None,
+        prices=None,
+    ):
         """
         Creates a new plans in API and returns an IuguPlan's instance. The
         fields required are name, identifier, interval, interval_type and
@@ -188,15 +205,24 @@ class IuguPlan(object):
                 currency = self.currency
 
         kwargs_local = locals().copy()
-        kwargs_local.pop('self') # prevent error of multiple value for args
+        kwargs_local.pop("self")  # prevent error of multiple value for args
         self.data = kwargs_local
         response = self.__conn.post(urn, self.data)
 
         return IuguPlan(**response)
 
-    def set(self, plan_id, name=None, identifier=None, interval=None,
-               interval_type=None, currency=None, value_cents=None,
-               features=None, prices=None):
+    def set(
+        self,
+        plan_id,
+        name=None,
+        identifier=None,
+        interval=None,
+        interval_type=None,
+        currency=None,
+        value_cents=None,
+        features=None,
+        prices=None,
+    ):
         """
         Edits/changes existent plan and returns IuguPlan's instance
 
@@ -204,7 +230,7 @@ class IuguPlan(object):
         """
         urn = "/v1/plans/{plan_id}".format(plan_id=plan_id)
         kwargs_local = locals().copy()
-        kwargs_local.pop('self')
+        kwargs_local.pop("self")
         self.data = kwargs_local
         response = self.__conn.put(urn, self.data)
         return IuguPlan(**response)
@@ -237,8 +263,9 @@ class IuguPlan(object):
         return IuguPlan(**response)
 
     @classmethod
-    def getitems(self, limit=None, skip=None, query=None, updated_since=None,
-                 sort=None):
+    def getitems(
+        self, limit=None, skip=None, query=None, updated_since=None, sort=None
+    ):
         """
         Gets plans by API default limited 100.
 
@@ -343,9 +370,11 @@ class Price(object):
         return a data that will extend the data params in request.
         """
         if not self.is_valid():
-            blanks = [ k for k, v in list(self.__dict__.items()) if v is None]
-            raise TypeError("All fields are required to %s. Blanks fields given %s" %
-                            (self.__class__, blanks))
+            blanks = [k for k, v in list(self.__dict__.items()) if v is None]
+            raise TypeError(
+                "All fields are required to %s. Blanks fields given %s"
+                % (self.__class__, blanks)
+            )
 
         data = []
         for k, v in list(self.__dict__.items()):
@@ -392,9 +421,11 @@ class Feature(object):
         return a data that will extend the data params in request.
         """
         if not self.is_valid():
-            blanks = [ k for k, v in list(self.__dict__.items()) if v is None ]
-            raise TypeError("All fields are required to class %s. Blanks fields given %s" %
-                        (self.__class__, blanks))
+            blanks = [k for k, v in list(self.__dict__.items()) if v is None]
+            raise TypeError(
+                "All fields are required to class %s. Blanks fields given %s"
+                % (self.__class__, blanks)
+            )
 
         data = []
         for k, v in list(self.__dict__.items()):

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'horacioibrahim'
+__author__ = "horacioibrahim"
 
 # python-iugu package modules
 from . import base, config, errors
+
 
 class IuguCustomer(base.IuguApi):
 
@@ -103,8 +104,16 @@ class IuguCustomer(base.IuguApi):
         return instance
 
     @classmethod
-    def getitems(self, limit=None, skip=None, created_at_from=None,
-                 created_at_to=None, query=None, updated_since=None, sort=None):
+    def getitems(
+        self,
+        limit=None,
+        skip=None,
+        created_at_from=None,
+        created_at_to=None,
+        query=None,
+        updated_since=None,
+        sort=None,
+    ):
         """
         Get a list of customers and return a list of IuguCustomer's instances.
 
@@ -148,7 +157,7 @@ class IuguCustomer(base.IuguApi):
 
         customers = self.__conn.get(urn, data)
 
-        #TODO: list comprehensions
+        # TODO: list comprehensions
         customers_objects = []
         for customer in customers["items"]:
             obj_customer = IuguCustomer(**customer)
@@ -169,15 +178,16 @@ class IuguCustomer(base.IuguApi):
                 _customer_id = customer_id
             else:
                 # instance of class (not saved)
-                raise TypeError("It's not instance of object returned or " \
-                                "customer_id is empty.")
+                raise TypeError(
+                    "It's not instance of object returned or " "customer_id is empty."
+                )
 
         urn = "/v1/customers/" + str(_customer_id)
         customer = self.__conn.delete(urn, data)
 
         return IuguCustomer(**customer)
 
-    remove = delete # remove for keep the semantic of API
+    remove = delete  # remove for keep the semantic of API
 
 
 class IuguPaymentMethod(object):
@@ -191,21 +201,23 @@ class IuguPaymentMethod(object):
 
     def __init__(self, customer, item_type="credit_card", **kwargs):
         assert isinstance(customer, IuguCustomer), "Customer invalid."
-        _data = kwargs.get('data')
-        self.customer_id = kwargs.get('customer_id') # useful create Payment by customer ID
+        _data = kwargs.get("data")
+        self.customer_id = kwargs.get(
+            "customer_id"
+        )  # useful create Payment by customer ID
         self.customer = customer
-        self.description = kwargs.get('description')
-        self.item_type = item_type # support only credit_card
+        self.description = kwargs.get("description")
+        self.item_type = item_type  # support only credit_card
         if _data:
-            self.token = _data.get('token') # data credit card token
-            self.display_number = _data.get('display_number')
-            self.brand = _data.get('brand')
-            self.holder_name = _data.get('holder_name')
+            self.token = _data.get("token")  # data credit card token
+            self.display_number = _data.get("display_number")
+            self.brand = _data.get("brand")
+            self.holder_name = _data.get("holder_name")
         # self.set_as_default = kwargs.get('set_as_default')
-        self.id = kwargs.get('id')
+        self.id = kwargs.get("id")
 
         # constructor payment
-        data = kwargs.get('data')
+        data = kwargs.get("data")
         if data and isinstance(data, dict):
             self.payment_data = PaymentTypeCreditCard(**data)
         else:
@@ -213,9 +225,19 @@ class IuguPaymentMethod(object):
 
         self.__conn = base.IuguRequests()
 
-    def create(self, customer_id=None, description=None, number=None,
-               verification_value=None, first_name=None, last_name=None,
-               month=None, year=None, token=None, set_as_default=False):
+    def create(
+        self,
+        customer_id=None,
+        description=None,
+        number=None,
+        verification_value=None,
+        first_name=None,
+        last_name=None,
+        month=None,
+        year=None,
+        token=None,
+        set_as_default=False,
+    ):
         """ Creates a payment method for a customer and returns the own class
 
         :param customer_id: id of customer. You can pass in init or here
@@ -241,8 +263,9 @@ class IuguPaymentMethod(object):
         assert self.description is not None, "description is required"
 
         if self.customer_id:
-            urn = "/v1/customers/{customer_id}/payment_methods" \
-                            .format(customer_id=str(self.customer.id))
+            urn = "/v1/customers/{customer_id}/payment_methods".format(
+                customer_id=str(self.customer.id)
+            )
         else:
             raise errors.IuguPaymentMethodException
 
@@ -253,9 +276,9 @@ class IuguPaymentMethod(object):
         if token:
             # if has token, card data it isn't need.
             self.token = token
-            data.append(("token", self.token ))
+            data.append(("token", self.token))
         else:
-            data.append(("item_type", self.item_type ))
+            data.append(("item_type", self.item_type))
             if number:
                 self.payment_data.number = number
 
@@ -295,8 +318,9 @@ class IuguPaymentMethod(object):
             else:
                 raise TypeError("Customer or customer_id is not be None")
 
-        urn = "/v1/customers/{customer_id}/payment_methods/{payment_id}".\
-                format(customer_id=customer_id, payment_id=payment_id)
+        urn = "/v1/customers/{customer_id}/payment_methods/{payment_id}".format(
+            customer_id=customer_id, payment_id=payment_id
+        )
         response = self.__conn.get(urn, data)
 
         return IuguPaymentMethod(self.customer, **response)
@@ -311,8 +335,9 @@ class IuguPaymentMethod(object):
         if customer_id is None:
             customer_id = self.customer.id
 
-        urn = "/v1/customers/{customer_id}/payment_methods".\
-                format(customer_id=customer_id)
+        urn = "/v1/customers/{customer_id}/payment_methods".format(
+            customer_id=customer_id
+        )
 
         response = self.__conn.get(urn, data)
         payments = []
@@ -323,8 +348,7 @@ class IuguPaymentMethod(object):
 
         return payments
 
-    def set(self, payment_id, description, customer_id=None,
-            set_as_default=False):
+    def set(self, payment_id, description, customer_id=None, set_as_default=False):
         """Updates/changes payment method with based in payment ID and customer.
         And returns object edited.
 
@@ -337,15 +361,15 @@ class IuguPaymentMethod(object):
         if customer_id is None:
             customer_id = self.customer.id
 
-        urn = "/v1/customers/{customer_id}/payment_methods/{payment_id}".\
-                format(customer_id=customer_id, payment_id=payment_id)
+        urn = "/v1/customers/{customer_id}/payment_methods/{payment_id}".format(
+            customer_id=customer_id, payment_id=payment_id
+        )
         response = self.__conn.put(urn, data)
 
         return IuguPaymentMethod(self.customer, **response)
 
     def save(self):
         return self.set(self.id, self.description)
-
 
     def delete(self, payment_id, customer_id=None):
         """Deletes payment method with based in ID and customer. And
@@ -358,8 +382,9 @@ class IuguPaymentMethod(object):
         if customer_id is None:
             customer_id = self.customer.id
 
-        urn = "/v1/customers/{customer_id}/payment_methods/{payment_id}".\
-                format(customer_id=customer_id, payment_id=payment_id)
+        urn = "/v1/customers/{customer_id}/payment_methods/{payment_id}".format(
+            customer_id=customer_id, payment_id=payment_id
+        )
 
         response = self.__conn.delete(urn, data)
 
@@ -383,20 +408,26 @@ class PaymentTypeCreditCard(object):
     """
 
     def __init__(self, **kwargs):
-        self.number = kwargs.get('number')
-        self.verification_value = kwargs.get('verification_value')
-        self.first_name = kwargs.get('first_name')
-        self.last_name = kwargs.get('last_name')
-        self.month = kwargs.get('month')
-        self.year = kwargs.get('year')
-        self.display_number = kwargs.get('display_number')
-        self.token = kwargs.get('token')
-        self.brand = kwargs.get('brand')
+        self.number = kwargs.get("number")
+        self.verification_value = kwargs.get("verification_value")
+        self.first_name = kwargs.get("first_name")
+        self.last_name = kwargs.get("last_name")
+        self.month = kwargs.get("month")
+        self.year = kwargs.get("year")
+        self.display_number = kwargs.get("display_number")
+        self.token = kwargs.get("token")
+        self.brand = kwargs.get("brand")
 
     def is_valid(self):
         """Required to send to API"""
-        if self.number and self.verification_value and self.first_name and \
-            self.last_name and self.month and self.year:
+        if (
+            self.number
+            and self.verification_value
+            and self.first_name
+            and self.last_name
+            and self.month
+            and self.year
+        ):
             return True
         else:
             return False
@@ -408,9 +439,11 @@ class PaymentTypeCreditCard(object):
         """
         # control to required fields
         if not self.is_valid():
-            blanks = [ k for k, v in list(self.__dict__.items()) if v is None]
-            raise TypeError("All fields required to %s. Blank fields given %s" %
-                            (self.__class__, blanks))
+            blanks = [k for k, v in list(self.__dict__.items()) if v is None]
+            raise TypeError(
+                "All fields required to %s. Blank fields given %s"
+                % (self.__class__, blanks)
+            )
 
         data = []
         for k, v in list(self.__dict__.items()):

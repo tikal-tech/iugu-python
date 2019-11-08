@@ -11,13 +11,20 @@ from . import config
 
 
 class IuguMerchant(base.IuguApi):
-
     def __init__(self, **kwargs):
         super(IuguMerchant, self).__init__(**kwargs)
         self.__conn = base.IuguRequests()
 
-    def create_payment_token(self, card_number, first_name, last_name,
-                             month, year, verification_value, method="credit_card"):
+    def create_payment_token(
+        self,
+        card_number,
+        first_name,
+        last_name,
+        month,
+        year,
+        verification_value,
+        method="credit_card",
+    ):
         """Sends credit_card data of a customer and returns a token
         for payment process without needing to persist personal data
         of customers.
@@ -34,10 +41,14 @@ class IuguMerchant(base.IuguApi):
           => http://iugu.com/referencias/api#tokens-e-cobranca-direta
         """
         urn = "/v1/payment_token"
-        data = [('data[last_name]', last_name), ('data[first_name]', first_name),
-                ('data[verification_value]', verification_value),
-                ('data[month]', month), ('data[year]', year),
-                ('data[number]', card_number)]
+        data = [
+            ("data[last_name]", last_name),
+            ("data[first_name]", first_name),
+            ("data[verification_value]", verification_value),
+            ("data[month]", month),
+            ("data[year]", year),
+            ("data[number]", card_number),
+        ]
 
         data.append(("account_id", self.account_id))  # work less this
         data.append(("test", self.is_mode_test()))
@@ -94,17 +105,17 @@ class Charge(object):
     def __init__(self, invoice):
         self.invoice = invoice
 
-        if 'message' in invoice:
-            self.message = invoice['message']
+        if "message" in invoice:
+            self.message = invoice["message"]
 
-        if 'errors' in invoice:
-            self.errors = invoice['errors']
+        if "errors" in invoice:
+            self.errors = invoice["errors"]
 
-        if 'success' in invoice:
-            self.success = invoice['success']
+        if "success" in invoice:
+            self.success = invoice["success"]
 
-        if 'invoice_id' in invoice:
-            self.invoice_id = invoice['invoice_id']
+        if "invoice_id" in invoice:
+            self.invoice_id = invoice["invoice_id"]
 
     def is_success(self):
         try:
@@ -127,16 +138,16 @@ class Token(object):
     def __init__(self, token_data):
         self.token_data = token_data
 
-        if 'id' in token_data:
-            self.id = token_data['id']
-        if 'extra_info' in token_data:
-            self.extra_info = token_data['extra_info']
-        if 'method' in token_data:
-            self.method = token_data['method']
+        if "id" in token_data:
+            self.id = token_data["id"]
+        if "extra_info" in token_data:
+            self.extra_info = token_data["extra_info"]
+        if "method" in token_data:
+            self.method = token_data["method"]
 
     @property
     def is_test(self):
-        if 'test' in list(self.token_data.keys()) and self.token_data['test'] == True:
+        if "test" in list(self.token_data.keys()) and self.token_data["test"] == True:
             return True
         else:
             return False
@@ -144,8 +155,8 @@ class Token(object):
     @property
     def status(self):
         try:
-            if 'errors' in list(self.token_data.keys()):
-                return self.token_data['errors']
+            if "errors" in list(self.token_data.keys()):
+                return self.token_data["errors"]
         except:
             pass
 
@@ -153,8 +164,9 @@ class Token(object):
 
 
 class Payer(object):
-
-    def __init__(self, name, email, address=None, cpf_cnpj=None, phone_prefix=None, phone=None):
+    def __init__(
+        self, name, email, address=None, cpf_cnpj=None, phone_prefix=None, phone=None
+    ):
         self.cpf_cnpj = cpf_cnpj
         self.name = name
         self.email = email
@@ -171,22 +183,22 @@ class Payer(object):
         as_tuple = []
         key = "payer"
 
-        as_tuple.append(("{payer}[cpf_cnpj]".format(
-            payer=key), self.cpf_cnpj))
+        as_tuple.append(("{payer}[cpf_cnpj]".format(payer=key), self.cpf_cnpj))
         as_tuple.append(("{payer}[name]".format(payer=key), self.name))
         as_tuple.append(("{payer}[email]".format(payer=key), self.email))
 
         if self.address:
-            as_tuple.append(("{payer}[address.zip_code]".format(
-                payer=key), self.address.zip_code))
-            as_tuple.append(("{payer}[address.number]".format(
-                payer=key), self.address.number))
+            as_tuple.append(
+                ("{payer}[address.zip_code]".format(payer=key), self.address.zip_code)
+            )
+            as_tuple.append(
+                ("{payer}[address.number]".format(payer=key), self.address.number)
+            )
 
         return as_tuple
 
 
 class Address(object):
-
     def __init__(self, street, number, city, state, country, zip_code):
         self.street = street
         self.number = number
@@ -232,24 +244,19 @@ class Item(object):
         if self.id:
             as_tuple.append(("{items}[][id]".format(items=key), self.id))
 
-        as_tuple.append(("{items}[][description]".format(items=key),
-                         self.description))
-        as_tuple.append(("{items}[][quantity]".format(items=key),
-                         self.quantity))
-        as_tuple.append(("{items}[][price_cents]".format(items=key),
-                         self.price_cents))
+        as_tuple.append(("{items}[][description]".format(items=key), self.description))
+        as_tuple.append(("{items}[][quantity]".format(items=key), self.quantity))
+        as_tuple.append(("{items}[][price_cents]".format(items=key), self.price_cents))
 
         if self.recurrent:
             value_recurrent = str(self.recurrent)
             value_recurrent = value_recurrent.lower()
-            as_tuple.append(("{items}[][recurrent]".format(items=key),
-                             value_recurrent))
+            as_tuple.append(("{items}[][recurrent]".format(items=key), value_recurrent))
 
         if self.destroy is not None:
             value_destroy = str(self.destroy)
             value_destroy = value_destroy.lower()
-            as_tuple.append(("{items}[][_destroy]".format(items=key),
-                             value_destroy))
+            as_tuple.append(("{items}[][_destroy]".format(items=key), value_destroy))
 
         return as_tuple
 

@@ -1,5 +1,5 @@
 # coding: utf-8
-__author__ = 'horacioibrahim'
+__author__ = "horacioibrahim"
 
 import os
 from http.client import HTTPSConnection, CannotSendRequest, BadStatusLine
@@ -8,6 +8,7 @@ from json import load as json_load
 
 # python-iugu package modules
 from . import errors, config
+
 
 class IuguApi(object):
 
@@ -18,16 +19,18 @@ class IuguApi(object):
     api_user:
     api_mode_test:
     """
+
     try:
-        API_TOKEN = os.environ["IUGU_API_TOKEN"] #config.API_TOKEN
+        API_TOKEN = os.environ["IUGU_API_TOKEN"]  # config.API_TOKEN
     except KeyError:
-        raise errors.IuguConfigException("Required environment variable " \
-                        "IUGU_API_TOKEN")
+        raise errors.IuguConfigException(
+            "Required environment variable " "IUGU_API_TOKEN"
+        )
 
     def __init__(self, **options):
-        self.account_id = options.get('account_id')
-        self.api_user = options.get('api_user')
-        self.api_mode_test = options.get('api_mode_test') # useful for payment_token
+        self.account_id = options.get("account_id")
+        self.api_user = options.get("api_user")
+        self.api_mode_test = options.get("api_mode_test")  # useful for payment_token
 
     def is_debug(self):
         """Returns debug mode in config"""
@@ -45,7 +48,7 @@ class IuguApi(object):
         """Unpacking dictionary of keywords arguments and returns a list with
         data fit for to send API"""
 
-        custom_data = [] # used to extend custom_variables in data_set()
+        custom_data = []  # used to extend custom_variables in data_set()
         if isinstance(custom_variables, dict):
             # TODO: list comprehensions
             for k, v in list(custom_variables.items()):
@@ -79,7 +82,7 @@ class IuguRequests(IuguApi):
     """
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    __conn = HTTPSConnection(config.API_HOSTNAME) # not put in instance
+    __conn = HTTPSConnection(config.API_HOSTNAME)  # not put in instance
     __conn.timeout = 10
 
     def __init__(self, **options):
@@ -99,7 +102,7 @@ class IuguRequests(IuguApi):
         results = json_load(response)
 
         try:
-            err = results['errors']
+            err = results["errors"]
         except:
             err = None
 
@@ -114,7 +117,7 @@ class IuguRequests(IuguApi):
         CLOSE_WAIT and raise errors CannotSendRequest or the server reply with
         empty and it raise BadStatusLine
         """
-        self.__conn = HTTPSConnection(config.API_HOSTNAME) # reload
+        self.__conn = HTTPSConnection(config.API_HOSTNAME)  # reload
         self.__conn.timeout = 10
 
     def __conn_request(self, http_verb, urn, params):
