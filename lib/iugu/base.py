@@ -2,12 +2,12 @@
 __author__ = 'horacioibrahim'
 
 import os
-from httplib import HTTPSConnection, CannotSendRequest, BadStatusLine
-from urllib import urlencode
+from http.client import HTTPSConnection, CannotSendRequest, BadStatusLine
+from urllib.parse import urlencode
 from json import load as json_load
 
 # python-iugu package modules
-import errors, config
+from . import errors, config
 
 class IuguApi(object):
 
@@ -48,7 +48,7 @@ class IuguApi(object):
         custom_data = [] # used to extend custom_variables in data_set()
         if isinstance(custom_variables, dict):
             # TODO: list comprehensions
-            for k, v in custom_variables.items():
+            for k, v in list(custom_variables.items()):
                 custom_data.append(("custom_variables[][name]", k.lower()))
                 custom_data.append(("custom_variables[][value]", v))
 

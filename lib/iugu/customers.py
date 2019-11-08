@@ -3,7 +3,7 @@
 __author__ = 'horacioibrahim'
 
 # python-iugu package modules
-import base, config, errors
+from . import base, config, errors
 
 class IuguCustomer(base.IuguApi):
 
@@ -408,12 +408,12 @@ class PaymentTypeCreditCard(object):
         """
         # control to required fields
         if not self.is_valid():
-            blanks = [ k for k, v in self.__dict__.items() if v is None]
+            blanks = [ k for k, v in list(self.__dict__.items()) if v is None]
             raise TypeError("All fields required to %s. Blank fields given %s" %
                             (self.__class__, blanks))
 
         data = []
-        for k, v in self.__dict__.items():
+        for k, v in list(self.__dict__.items()):
             key = "data[{key_name}]".format(key_name=k)
             data.append((key, v))
 

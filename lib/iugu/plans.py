@@ -1,7 +1,7 @@
 __author__ = 'horacioibrahim'
 
 # python-iugu package modules
-import base, config, errors
+from . import base, config, errors
 
 class IuguPlan(object):
 
@@ -305,7 +305,7 @@ class IuguPlan(object):
         obj = IuguPlan(**response)
 
         if obj:
-            for k, v in self.__dict__.items():
+            for k, v in list(self.__dict__.items()):
                 self.__dict__[k] = None
 
 
@@ -343,12 +343,12 @@ class Price(object):
         return a data that will extend the data params in request.
         """
         if not self.is_valid():
-            blanks = [ k for k, v in self.__dict__.items() if v is None]
+            blanks = [ k for k, v in list(self.__dict__.items()) if v is None]
             raise TypeError("All fields are required to %s. Blanks fields given %s" %
                             (self.__class__, blanks))
 
         data = []
-        for k, v in self.__dict__.items():
+        for k, v in list(self.__dict__.items()):
             if v is not None:
                 key = "prices[][{key_name}]".format(key_name=k)
                 data.append((key, v))
@@ -392,12 +392,12 @@ class Feature(object):
         return a data that will extend the data params in request.
         """
         if not self.is_valid():
-            blanks = [ k for k, v in self.__dict__.items() if v is None ]
+            blanks = [ k for k, v in list(self.__dict__.items()) if v is None ]
             raise TypeError("All fields are required to class %s. Blanks fields given %s" %
                         (self.__class__, blanks))
 
         data = []
-        for k, v in self.__dict__.items():
+        for k, v in list(self.__dict__.items()):
             if v is not None:
                 key = "features[][{key_name}]".format(key_name=k)
                 data.append((key, v))

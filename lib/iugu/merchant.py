@@ -1,13 +1,13 @@
 # coding: utf-8
 
-import httplib
+import http.client
 import json
-from urllib import urlencode
-from urllib2 import urlopen, Request
+from urllib.parse import urlencode
+from urllib.request import urlopen, Request
 
 # python-iugu package modules
-import base
-import config
+from . import base
+from . import config
 
 
 class IuguMerchant(base.IuguApi):
@@ -136,7 +136,7 @@ class Token(object):
 
     @property
     def is_test(self):
-        if 'test' in self.token_data.keys() and self.token_data['test'] == True:
+        if 'test' in list(self.token_data.keys()) and self.token_data['test'] == True:
             return True
         else:
             return False
@@ -144,7 +144,7 @@ class Token(object):
     @property
     def status(self):
         try:
-            if 'errors' in self.token_data.keys():
+            if 'errors' in list(self.token_data.keys()):
                 return self.token_data['errors']
         except:
             pass

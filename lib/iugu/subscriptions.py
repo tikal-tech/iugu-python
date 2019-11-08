@@ -1,7 +1,7 @@
 __author__ = 'horacioibrahim'
 
 # python-iugu package modules
-import base, config, errors, merchant
+from . import base, config, errors, merchant
 
 class IuguSubscription(base.IuguApi):
 
@@ -212,7 +212,7 @@ class IuguSubscription(base.IuguApi):
         # TODO: to improve this ineffective approach
         # Currently this check if the required set's parameters was passed
         # If changes occurs in set() to revise this k in if used to mount kwargs
-        for k, v in self.__dict__.items():
+        for k, v in list(self.__dict__.items()):
             if v is not None:
                 if  k == "plan_identifier" or \
                     k == "expires_at" or k == "subitems" or \
@@ -472,7 +472,7 @@ class SubscriptionCreditsBased(IuguSubscription):
         # TODO: to improve this ineffective approach.
         # Currently this check if the set's parameters was passed. If changes
         # occurs in set() to revise this k in if used to mount kwargs
-        for k, v in self.__dict__.items():
+        for k, v in list(self.__dict__.items()):
             if v is not None:
                 if  k == "expires_at" or \
                     k == "subitems" or k == "suspended" or \

@@ -2,7 +2,7 @@ __author__ = 'horacioibrahim'
 
 
 # python-iugu package modules
-import merchant, config, base, errors
+from . import merchant, config, base, errors
 
 class IuguInvoice(base.IuguApi):
 
@@ -345,7 +345,7 @@ class IuguInvoice(base.IuguApi):
         obj = IuguInvoice(**response)
         # TODO: list comprehensions ?
         if obj:
-            for k, v in self.__dict__.items():
+            for k, v in list(self.__dict__.items()):
                 self.__dict__[k] = None
 
     def cancel(self):

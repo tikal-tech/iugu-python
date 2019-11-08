@@ -10,7 +10,7 @@ from hashlib import md5
 from types import StringType
 
 # python-iugu package modules
-import merchant, customers, config, invoices, errors, plans, subscriptions
+from . import merchant, customers, config, invoices, errors, plans, subscriptions
 
 
 def check_tests_environment():
@@ -550,7 +550,7 @@ class TestInvoice(unittest.TestCase):
     def test_invoice_edit_email_with_set(self):
         id = self.invoice.id
         invoice_edited = self.invoice_obj.set(invoice_id=id, email="now@now.com")
-        self.assertEqual(invoice_edited.email, u"now@now.com")
+        self.assertEqual(invoice_edited.email, "now@now.com")
 
     def test_invoice_edit_return_url_with_set(self):
         return_url = "http://hipy.co"
@@ -1366,7 +1366,7 @@ class TestSubscriptions(unittest.TestCase):
     @unittest.skip("Waiting API developers to support this question")
     def test_subscription_set_skip_charge(self):
         # Test if skip_charge was marked
-        print self.subscription.id
+        print(self.subscription.id)
         subscription = subscriptions.IuguSubscription().\
                     set(self.subscription.id, skip_charge=True)
         self.assertEqual(subscription.suspended, True)
